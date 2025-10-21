@@ -1,0 +1,23 @@
+{
+  "games": [
+    {
+      "gameId": "status-enshrouded",
+  "status": "pendiente",
+      "votes": {
+   "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+    }
+    },
+    {
+    "gameId": "status-baldursgate",
+ "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+     "disfrutado": 0,
+        "rechazado": 0
+      }
+    }
+  ],
+  "lastUpdate": "2024-01-24T00:00:00Z"
+}
