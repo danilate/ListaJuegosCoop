@@ -1,88 +1,49 @@
-// Variables globales
-let gameData = null;
+import { db, ref, set, onValue } from './js/firebase.js';
 
-// Función para cargar los datos del JSON
-async function loadGameData() {
-    try {
-        const response = await fetch('/api/GameStatus');
-        if (!response.ok) {
-            throw new Error('No se pudo cargar los datos');
-        }
-        gameData = await response.json();
-        return gameData;
-    } catch (error) {
-        console.error('Error cargando datos:', error);
-        return {
-            games: [],
-            lastUpdate: new Date().toISOString()
-        };
-    }
-}
-
-// Función para guardar los datos en el servidor
-async function saveGameData() {
-    try {
-        const response = await fetch('/api/GameStatus', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(gameData)
-        });
-
-        if (!response.ok) {
-            throw new Error('No se pudo guardar los datos');
-        }
-
-        const result = await response.json();
-        console.log('Estados guardados:', result.message);
-    } catch (error) {
-        console.error('Error guardando datos:', error);
-    }
-}
-
-// Función para actualizar el estado de un juego
-async function updateGameStatus(gameId, newStatus) {
-    const game = gameData.games.find(g => g.gameId === gameId);
-    if (game) {
-        game.status = newStatus;
-        await saveGameData();
-    }
-}
-
-// Inicializar la aplicación
-async function initializeApp() {
-    await loadGameData();
-
-    // Configurar los selectores de estado
-    document.querySelectorAll('.status-select').forEach(select => {
-        const gameId = select.id;
-        const game = gameData.games.find(g => g.gameId === gameId);
-
-        if (game) {
-            select.value = game.status;
-            select.closest('.game-card').setAttribute('data-status', game.status);
-        }
-
-        // Evento para cambio de estado
-        select.addEventListener('change', async (event) => {
-            const newStatus = event.target.value;
-            const card = event.target.closest('.game-card');
-            card.setAttribute('data-status', newStatus);
-            await updateGameStatus(gameId, newStatus);
-        });
+// Función para actualizar el estado en Firebase
+function updateGameStatus(gameId, newStatus) {
+    const gameRef = ref(db, 'games/' + gameId);
+    set(gameRef, {
+        status: newStatus,
+        lastUpdate: new Date().toISOString()
     });
 }
 
-// Iniciar la aplicación cuando el DOM esté listo
+// Función para cargar los estados desde Firebase
+function loadGameStates() {
+    const gamesRef = ref(db, 'games');
+ onValue(gamesRef, (snapshot) => {
+  const data = snapshot.val();
+        if (data) {
+       // Actualizar todos los selectores con los estados guardados
+         document.querySelectorAll('.status-select').forEach(select => {
+              const gameId = select.id;
+                if (data[gameId]) {
+             select.value = data[gameId].status;
+    select.closest('.game-card').setAttribute('data-status', data[gameId].status);
+       }
+            });
+  }
+    });
+}
+
+// Inicializar la aplicación
 document.addEventListener('DOMContentLoaded', () => {
+    // Cargar estados iniciales
+    loadGameStates();
+    
     // Configurar los selectores de estado
     document.querySelectorAll('.status-select').forEach(select => {
-        // Evento para cambio de estado
-        select.addEventListener('change', (event) => {
+select.addEventListener('change', (event) => {
+ const gameId = event.target.id;
             const newStatus = event.target.value;
-            const card = event.target.closest('.game-card');
-            card.setAttribute('data-status', newStatus);
-        });
+   const card = event.target.closest('.game-card');
+      
+        // Actualizar el estado visual
+  card.setAttribute('data-status', newStatus);
+        
+ // Guardar en Firebase
+            updateGameStatus(gameId, newStatus);
+ });
     });
 });
