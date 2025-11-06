@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js';
-import { getDatabase, ref, set, push, onValue } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js';
+import { getDatabase, ref, set, push, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -31,6 +31,18 @@ export async function saveGame(gameData) {
     } catch (error) {
    console.error('Error saving game:', error);
         throw error;
+    }
+}
+
+// Función para eliminar un juego
+export async function deleteGame(gameId) {
+    try {
+        const gameRef = ref(db, `games/${gameId}`);
+   await remove(gameRef);
+ return true;
+    } catch (error) {
+        console.error('Error deleting game:', error);
+ throw error;
     }
 }
 
