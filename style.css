@@ -566,7 +566,8 @@ background: white;
 
 /* Matasellos */
 .game-card[data-status="disfrutado"]::before {
-    content: '?';
+    font-family: "Font Awesome 5 Free";
+    content: "\f00c";  /* fa-check */
     position: absolute;
     top: 50%;
     left: 50%;
@@ -577,30 +578,23 @@ background: white;
     z-index: 1;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     pointer-events: none;
+    font-weight: 900;
 }
 
 .game-card[data-status="rechazado"]::before {
-    content: '?';
+ font-family: "Font Awesome 5 Free";
+    content: "\f00d";  /* fa-times */
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(-15deg);
     font-size: 8rem;
-color: #ff4757;
+    color: #ff4757;
     opacity: 0.3;
-    z-index: 1;
+ z-index: 1;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     pointer-events: none;
-}
-
-.game-card[data-status="disfrutado"] {
-    background: linear-gradient(135deg, #00b89410, #00b89405);
-    border: 1px solid #00b89440;
-}
-
-.game-card[data-status="rechazado"] {
-    background: linear-gradient(135deg, #ff475710, #ff475705);
-    border: 1px solid #ff475740;
+    font-weight: 900;
 }
 
 /* Modal */
