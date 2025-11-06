@@ -165,50 +165,6 @@ background-color: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.votes-container {
-    display: flex;
-    gap: 10px;
-    margin-top: 8px;
-    justify-content: center;
-}
-
-.vote-count {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.9em;
-  color: #666;
-    background-color: #f0f0f0;
-    padding: 4px 8px;
-  border-radius: 12px;
-transition: all 0.2s ease;
-}
-
-.vote-count:hover {
-    background-color: #e0e0e0;
-    transform: scale(1.05);
-}
-
-.vote-count i {
-    font-size: 0.9em;
-}
-
-/* Colores específicos para cada estado */
-.vote-count[title="Pendiente"] {
-    background-color: #fff3cd;
-    color: #856404;
-}
-
-.vote-count[title="Disfrutado"] {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.vote-count[title="Rechazado"] {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
     body {

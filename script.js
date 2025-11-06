@@ -4,108 +4,85 @@ let gameData = null;
 // Función para cargar los datos del JSON
 async function loadGameData() {
     try {
-        const response = await fetch('data/gameStatus.json');
-    if (!response.ok) {
-         throw new Error('No se pudo cargar los datos');
+        const response = await fetch('/api/GameStatus');
+        if (!response.ok) {
+            throw new Error('No se pudo cargar los datos');
         }
-      gameData = await response.json();
+        gameData = await response.json();
         return gameData;
     } catch (error) {
         console.error('Error cargando datos:', error);
-    // Si hay error, crear estructura básica
         return {
-    games: [],
+            games: [],
             lastUpdate: new Date().toISOString()
         };
     }
 }
 
-// Función para obtener o crear datos de un juego
-function getOrCreateGameData(gameId) {
-    let game = gameData.games.find(g => g.gameId === gameId);
-    if (!game) {
-        game = {
-   gameId: gameId,
-  status: 'pendiente',
-    votes: {
-       pendiente: 0,
-          disfrutado: 0,
-         rechazado: 0
-       }
-        };
-gameData.games.push(game);
-  }
-    return game;
-}
+// Función para guardar los datos en el servidor
+async function saveGameData() {
+    try {
+        const response = await fetch('/api/GameStatus', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(gameData)
+        });
 
-// Función para actualizar el estado visual de una tarjeta
-function updateCardStatus(gameId, status, votes) {
-  const select = document.getElementById(gameId);
-    if (!select) return;
-
-  select.value = status;
-    const card = select.closest('.game-card');
-    if (card) {
-        card.setAttribute('data-status', status);
-        
-      // Actualizar o crear el contador de votos
-    let votesContainer = card.querySelector('.votes-container');
-  if (!votesContainer) {
-        votesContainer = document.createElement('div');
-      votesContainer.className = 'votes-container';
-  select.parentNode.appendChild(votesContainer);
+        if (!response.ok) {
+            throw new Error('No se pudo guardar los datos');
         }
-        
-      votesContainer.innerHTML = `
-            <span class="vote-count" title="Pendiente">
-   <i class="fas fa-clock"></i> ${votes.pendiente}
-        </span>
-         <span class="vote-count" title="Disfrutado">
-      <i class="fas fa-heart"></i> ${votes.disfrutado}
-      </span>
-       <span class="vote-count" title="Rechazado">
-       <i class="fas fa-times"></i> ${votes.rechazado}
-      </span>
-     `;
+
+        const result = await response.json();
+        console.log('Estados guardados:', result.message);
+    } catch (error) {
+        console.error('Error guardando datos:', error);
     }
 }
 
-// Función para manejar el cambio de estado
-function handleStatusChange(event) {
-    const gameId = event.target.id;
-    const status = event.target.value;
-    const game = getOrCreateGameData(gameId);
-    
-    // Actualizar votos
-    game.votes[status]++;
-    game.status = status;
-    
-    // Actualizar visualización
-    updateCardStatus(gameId, status, game.votes);
-    
- // Aquí podrías implementar lógica para enviar PR a GitHub
-    console.log(`Estado actualizado para ${gameId}: ${status}`);
-    console.log('Para contribuir con tu voto, crea un PR en GitHub');
+// Función para actualizar el estado de un juego
+async function updateGameStatus(gameId, newStatus) {
+    const game = gameData.games.find(g => g.gameId === gameId);
+    if (game) {
+        game.status = newStatus;
+        await saveGameData();
+    }
 }
 
-// Función para configurar los event listeners
-function setupEventListeners() {
- const selects = document.querySelectorAll('.status-select');
-    selects.forEach(select => {
-        select.addEventListener('change', handleStatusChange);
+// Inicializar la aplicación
+async function initializeApp() {
+    await loadGameData();
+
+    // Configurar los selectores de estado
+    document.querySelectorAll('.status-select').forEach(select => {
+        const gameId = select.id;
+        const game = gameData.games.find(g => g.gameId === gameId);
+
+        if (game) {
+            select.value = game.status;
+            select.closest('.game-card').setAttribute('data-status', game.status);
+        }
+
+        // Evento para cambio de estado
+        select.addEventListener('change', async (event) => {
+            const newStatus = event.target.value;
+            const card = event.target.closest('.game-card');
+            card.setAttribute('data-status', newStatus);
+            await updateGameStatus(gameId, newStatus);
+        });
     });
 }
 
-// Función para cargar todos los estados
-async function loadAllGameStates() {
-    const data = await loadGameData();
-    data.games.forEach(game => {
-        updateCardStatus(game.gameId, game.status, game.votes);
-    });
-}
-
-// Inicialización cuando el documento está listo
+// Iniciar la aplicación cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-    loadAllGameStates();
-    setupEventListeners();
+    // Configurar los selectores de estado
+    document.querySelectorAll('.status-select').forEach(select => {
+        // Evento para cambio de estado
+        select.addEventListener('change', (event) => {
+            const newStatus = event.target.value;
+            const card = event.target.closest('.game-card');
+            card.setAttribute('data-status', newStatus);
+        });
+    });
 });
