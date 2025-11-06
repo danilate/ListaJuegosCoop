@@ -1,7 +1,7 @@
 import { onGamesUpdate, updateGameStatus, deleteGame } from './js/firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-const gameList = document.getElementById('game-list');
+    const gameList = document.getElementById('game-list');
     const modal = document.getElementById('addGameModal');
     const openModalBtn = document.getElementById('openAddGame');
     const closeModalBtn = document.querySelector('.close');
@@ -9,9 +9,15 @@ const gameList = document.getElementById('game-list');
     const gameUrlInput = document.getElementById('gameUrl');
     const urlError = document.getElementById('urlError');
 
+    // Función para mostrar el estado de carga
+    function setLoading(isLoading) {
+        addGameBtn.disabled = isLoading;
+        addGameBtn.classList.toggle('loading', isLoading);
+    }
+
     // Función para crear una tarjeta de juego
     function createGameCard(game) {
-     const card = document.createElement('div');
+        const card = document.createElement('div');
         card.className = 'game-card';
         card.setAttribute('data-status', game.status);
       
