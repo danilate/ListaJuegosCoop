@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js';
-import { getDatabase, ref, set, push, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js';
+import { getDatabase, ref, set, push, onValue, remove, update } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -50,10 +50,10 @@ export async function deleteGame(gameId) {
 export async function updateGameStatus(gameId, newStatus) {
     try {
         const gameRef = ref(db, `games/${gameId}`);
-        await set(gameRef, {
+        await update(gameRef, {
             status: newStatus,
             lastModified: new Date().toISOString()
-        }, { merge: true });
+        });
     } catch (error) {
         console.error('Error updating game status:', error);
         throw error;
