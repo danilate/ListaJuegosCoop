@@ -15,18 +15,18 @@
 
     <!-- Modal añadir juego -->
     <div id="addGameModal" class="modal">
-  <div class="modal-content">
-<span class="close">&times;</span>
-            <h2>Añadir Nuevo Juego</h2>
-            <div class="modal-form">
-   <div class="form-group">
-       <label for="gameUrl">URL del Juego (Steam o Epic Store):</label>
- <input type="url" id="gameUrl" placeholder="https://store.steampowered.com/app/..." required>
-             </div>
-            <div id="urlError" class="error-message"></div>
-         <button id="addGameBtn">Añadir Juego</button>
-</div>
-        </div>
+        <div class="modal-content">
+    <span class="close">&times;</span>
+   <h2>Añadir Nuevo Juego</h2>
+     <div class="modal-form">
+      <div class="form-group">
+    <label for="gameUrl">URL del Juego (Steam o Epic Store):</label>
+   <input type="url" id="gameUrl" placeholder="https://store.steampowered.com/app/..." required>
+         </div>
+       <div id="urlError" class="error-message"></div>
+      <button id="addGameBtn">Añadir Juego</button>
+    </div>
+  </div>
     </div>
 
     <header>
@@ -38,7 +38,7 @@
         <!-- Los juegos se cargarán dinámicamente desde Firebase -->
     </main>
 
-    <script type="module" src="js/firebase.js"></script>
-    <script type="module" src="js/script.js"></script>
+ <script type="module" src="js/firebase.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
