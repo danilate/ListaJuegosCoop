@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Juegos Cooperativos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Botón añadir juego -->
+    <div class="add-game-button">
+        <button id="openAddGame"><i class="fas fa-plus"></i> Añadir Juego</button>
+    </div>
+
+    <!-- Modal añadir juego -->
+  <div id="addGameModal" class="modal">
+   <div class="modal-content">
+     <span class="close">&times;</span>
+     <h2>Añadir Nuevo Juego</h2>
+      <div class="modal-form">
+     <div class="form-group">
+<label for="gameUrl">URL del Juego (Steam o Epic Store):</label>
+    <input type="url" id="gameUrl" placeholder="https://store.steampowered.com/app/..." required>
+  </div>
+      <div id="urlError" class="error-message"></div>
+     <button id="addGameBtn">Añadir Juego</button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+ <h1><i class="fas fa-gamepad"></i> Juegos Coop que quiero probar</h1>
+        <p>Explora esta colecci&oacute;n de aventuras cooperativas que quiero jugar con amigos.</p>
+    </header>
+
+    <main id="game-list">
+        <!-- Los juegos se cargarán dinámicamente desde Firebase -->
+    </main>
+
+    <script type="module" src="js/firebase.js"></script>
+    <script type="module" src="js/migrateGames.js"></script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
