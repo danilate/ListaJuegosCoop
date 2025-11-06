@@ -32,9 +32,24 @@ header p {
 
 #game-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 25px;
     padding: 10px;
+}
+
+#game-list .game-card[data-status="pendiente"] {
+    order: 0;
+}
+
+#game-list .game-card[data-status="disfrutado"] {
+    order: 1;
+}
+
+#game-list .game-card[data-status="rechazado"] {
+    order: 2;
+    background-color: #2d3436;
+    opacity: 0.95;
+  overflow: visible;
 }
 
 .game-card {
@@ -42,9 +57,9 @@ header p {
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     overflow: hidden;
-transition: all 0.3s ease;
- display: flex;
-    flex-direction: column;
+    transition: all 0.3s ease;
+    display: flex;
+  flex-direction: column;
     position: relative;
     border: 1px solid rgba(0,0,0,0.05);
 }
@@ -137,32 +152,87 @@ background-color: white;
     box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
 }
 
-/* Estilos para estados */
-.game-card[data-status="rechazado"] {
-  background-color: #f8f9fa;
-    opacity: 0.85;
-}
-
-.game-card[data-status="rechazado"] .game-image {
-    filter: grayscale(0.7);
+.game-card[data-status="disfrutado"] {
+    overflow: visible;
 }
 
 .game-card[data-status="disfrutado"]::before {
-    content: '?';
-    color: #00b894;
-    font-size: 1.2rem;
+    content: 'COMPLETADO';
     position: absolute;
-  top: 1rem;
-    right: 1rem;
-    z-index: 1;
-    background-color: white;
-    width: 30px;
- height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-25deg);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+font-size: 4rem;
+    color: #00b894;
+    border: 0.5rem solid #00b894;
+padding: 1rem 2rem;
+    border-radius: 1rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    white-space: nowrap;
+ pointer-events: none;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+letter-spacing: 0.2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.game-card[data-status="rechazado"]::before {
+    content: 'RECHAZADO';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-25deg);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+    font-size: 4rem;
+color: #d63031;
+  border: 0.5rem solid #d63031;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.game-card[data-status="rechazado"] .game-image {
+    filter: grayscale(0.7) brightness(0.8);
+}
+
+.game-card[data-status="rechazado"] .card-content {
+    color: #fff;
+}
+
+.game-card[data-status="rechazado"] .card-content h2 {
+    color: #fff;
+}
+
+.game-card[data-status="rechazado"] .card-content p {
+    color: #dfe6e9;
+}
+
+.game-card[data-status="rechazado"] .steam-link {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #dfe6e9;
+}
+
+.game-card[data-status="rechazado"] .steam-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.game-card[data-status="rechazado"] .status-container {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.game-card[data-status="rechazado"] .status-container label {
+    color: #dfe6e9;
 }
 
 /* Responsive adjustments */
