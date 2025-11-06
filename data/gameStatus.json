@@ -4,17 +4,233 @@
       "gameId": "status-enshrouded",
       "status": "pendiente",
       "votes": {
-        "pendiente": 0,
-  "disfrutado": 0,
-"rechazado": 0
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
       }
- },
+    },
     {
       "gameId": "status-baldursgate",
       "status": "pendiente",
-  "votes": {
-  "pendiente": 0,
-      "disfrutado": 0,
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-ittakestwo",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-deeprock",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-valheim",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-overcooked2",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-l4d2",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-ror2",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-gmod",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-forest",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-mhw",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-ktane",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-rocketleague",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-awayout",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-achilles",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-stranger",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-helldivers2",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-smalland",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-breadfred",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-readyornot",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-fortheking2",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-avatar",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-escape",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-sworn",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-shipoffools",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
+        "rechazado": 0
+      }
+    },
+    {
+      "gameId": "status-carrytheglass",
+      "status": "pendiente",
+      "votes": {
+        "pendiente": 1,
+        "disfrutado": 0,
         "rechazado": 0
       }
     }
