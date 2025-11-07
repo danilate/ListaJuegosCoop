@@ -1,6 +1,7 @@
 import { onGamesUpdate, updateGameStatus, deleteGame, saveGame } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Script loaded...'); // Debug log
     const gameList = document.getElementById('game-list');
     const modal = document.getElementById('addGameModal');
     const openModalBtn = document.getElementById('openAddGame');
@@ -177,18 +178,22 @@ description: gameInfo.short_description,
 
     // Función para renderizar todos los juegos
     function renderGames(games) {
-        if (!games) return;
+  console.log('Rendering games:', games); // Debug log
+        if (!games) {
+console.log('No games data received'); // Debug log
+            return;
+        }
         
         gameList.innerHTML = '';
-        Object.entries(games)
+      Object.entries(games)
             .sort(([,a], [,b]) => {
-                const statusOrder = { pendiente: 0, disfrutado: 1, rechazado: 2 };
-    return statusOrder[a.status] - statusOrder[b.status];
-            })
+    const statusOrder = { pendiente: 0, disfrutado: 1, rechazado: 2 };
+  return statusOrder[a.status] - statusOrder[b.status];
+    })
             .forEach(([id, game]) => {
-  game.id = id;
-        gameList.appendChild(createGameCard(game));
-        });
+         game.id = id;
+      gameList.appendChild(createGameCard(game));
+       });
     }
 
     // Event listeners para el modal
@@ -204,10 +209,11 @@ description: gameInfo.short_description,
 
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
-       modal.style.display = 'none';
+            modal.style.display = 'none';
         }
     });
 
+    console.log('Setting up Firebase listener...'); // Debug log
     // Escuchar cambios en la base de datos
     onGamesUpdate(renderGames);
-});});
+});

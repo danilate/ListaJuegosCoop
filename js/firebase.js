@@ -20,13 +20,11 @@ const db = getDatabase(app);
 // Función para guardar un juego
 export async function saveGame(gameData) {
     try {
-        // Generar una referencia con el ID del juego
         const gameRef = ref(db, `games/${gameData.id}`);
-        // Guardar los datos
-        await set(gameRef, {
-            ...gameData,
-            lastModified: new Date().toISOString()
-        });
+    await set(gameRef, {
+         ...gameData,
+        lastModified: new Date().toISOString()
+     });
         return gameData.id;
     } catch (error) {
         console.error('Error saving game:', error);
@@ -39,7 +37,7 @@ export async function deleteGame(gameId) {
     try {
         const gameRef = ref(db, `games/${gameId}`);
         await remove(gameRef);
-        return true;
+     return true;
     } catch (error) {
         console.error('Error deleting game:', error);
         throw error;
@@ -50,9 +48,9 @@ export async function deleteGame(gameId) {
 export async function updateGameStatus(gameId, newStatus) {
     try {
         const gameRef = ref(db, `games/${gameId}`);
-        await update(gameRef, {
-            status: newStatus,
-            lastModified: new Date().toISOString()
+  await update(gameRef, {
+    status: newStatus,
+          lastModified: new Date().toISOString()
         });
     } catch (error) {
         console.error('Error updating game status:', error);
@@ -63,10 +61,13 @@ export async function updateGameStatus(gameId, newStatus) {
 // Función para obtener todos los juegos
 export function onGamesUpdate(callback) {
     const gamesRef = ref(db, 'games');
+    console.log('Setting up Firebase listener...'); // Debug log
     onValue(gamesRef, (snapshot) => {
-        const data = snapshot.val();
+        console.log('Firebase data received:', snapshot.val()); // Debug log
+      const data = snapshot.val();
         callback(data);
     });
 }
 
-export { db, ref, set, onValue };
+// Exportar todo lo necesario
+export { db, ref, set, push, onValue, remove, update };
