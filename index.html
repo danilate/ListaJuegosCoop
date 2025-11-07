@@ -13,34 +13,34 @@
         <button id="openAddGame"><i class="fas fa-plus"></i> Añadir Juego</button>
     </div>
 
-  <!-- Modal añadir juego -->
+    <!-- Modal añadir juego -->
     <div id="addGameModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-        <h2>Añadir Nuevo Juego</h2>
-       <div class="modal-form">
-           <div class="form-group">
-           <label for="gameUrl">URL del Juego (Steam o Epic Store):</label>
-    <input type="url" id="gameUrl" placeholder="https://store.steampowered.com/app/..." required>
-       </div>
-       <div id="urlError" class="error-message"></div>
-   <button id="addGameBtn">
-       <span class="button-text">Añadir Juego</span>
+ <span class="close">&times;</span>
+      <h2>Añadir Nuevo Juego</h2>
+    <div class="modal-form">
+                <div class="form-group">
+            <label for="gameUrl">URL del Juego (Steam o Epic Store):</label>
+       <input type="url" id="gameUrl" placeholder="https://store.steampowered.com/app/..." required>
+   </div>
+          <div id="urlError" class="error-message"></div>
+                <button id="addGameBtn">
+          <span class="button-text">Añadir Juego</span>
       <span class="loading-spinner">
-        <i class="fas fa-spinner fa-spin"></i>
-    </span>
-       </button>
+<i class="fas fa-spinner fa-spin"></i>
+         </span>
+      </button>
+   </div>
     </div>
-        </div>
     </div>
 
     <header>
       <h1><i class="fas fa-gamepad"></i> Juegos Coop que quiero probar</h1>
-        <p>Explora esta colección de aventuras cooperativas que quiero jugar con amigos.</p>
+   <p>Explora esta colección de aventuras cooperativas que quiero jugar con amigos.</p>
     </header>
 
     <main id="game-list">
-        <!-- Los juegos se cargarán dinámicamente desde Firebase -->
+    <!-- Los juegos se cargarán dinámicamente desde Firebase -->
     </main>
 
     <script type="module" src="js/firebase.js"></script>
