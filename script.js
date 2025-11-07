@@ -35,37 +35,48 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para obtener información del juego desde Steam
     async function fetchSteamGameInfo(appId) {
         try {
-     const response = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appId}`);
-         const data = await response.json();
+          // Usando cors-proxy para evitar restricciones CORS
+const proxyUrl = 'https://api.allorigins.win/get?url=';
+    const steamUrl = `https://store.steampowered.com/api/appdetails?appids=${appId}`;
+            const encodedUrl = encodeURIComponent(steamUrl);
+        
+       const response = await fetch(`${proxyUrl}${encodedUrl}`);
+     const proxyData = await response.json();
      
-            if (data[appId].success) {
-     const gameInfo = data[appId].data;
-       const coopCategories = gameInfo.categories
-      .filter(cat => cat.id === 38 || cat.id === 9 || cat.id === 1)
-              .map(cat => cat.description);
-
-                // Solo proceder si el juego tiene modo cooperativo
-    if (coopCategories.length > 0) {
-         return {
-            id: `steam_${appId}`,
-           title: gameInfo.name,
-description: gameInfo.short_description,
-   imageUrl: gameInfo.header_image,
-         storeUrl: `https://store.steampowered.com/app/${appId}`,
-   storeType: 'steam',
-     players: coopCategories.join(', '),
-        status: 'pendiente',
- icon: 'fas fa-gamepad',
-      addedDate: new Date().toISOString()
-     };
-     } else {
-      throw new Error('Este juego no parece tener modo cooperativo');
-    }
+    if (!proxyData.contents) {
+                throw new Error('No se pudo obtener la información del juego');
          }
-            throw new Error('No se pudo obtener la información del juego');
+
+    const data = JSON.parse(proxyData.contents);
+    
+      if (data[appId].success) {
+                const gameInfo = data[appId].data;
+          const coopCategories = gameInfo.categories
+   ?.filter(cat => cat.id === 38 || cat.id === 9 || cat.id === 1)
+                 ?.map(cat => cat.description) || [];
+
+      // Solo proceder si el juego tiene modo cooperativo
+                if (coopCategories.length > 0) {
+           return {
+         id: `steam_${appId}`,
+             title: gameInfo.name,
+      description: gameInfo.short_description,
+           imageUrl: gameInfo.header_image,
+                 storeUrl: `https://store.steampowered.com/app/${appId}`,
+        storeType: 'steam',
+     players: coopCategories.join(', '),
+   status: 'pendiente',
+  icon: 'fas fa-gamepad',
+         addedDate: new Date().toISOString()
+      };
+      } else {
+       throw new Error('Este juego no parece tener modo cooperativo');
+                }
+     }
+     throw new Error('No se pudo obtener la información del juego');
         } catch (error) {
     console.error('Error obteniendo información del juego:', error);
-  throw error;
+     throw error;
         }
     }
 
