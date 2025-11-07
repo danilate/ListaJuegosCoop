@@ -417,6 +417,43 @@ background-color: rgba(255, 255, 255, 0.9);
     color: white;
 }
 
+/* Enlaces */
+.steam-link {
+ display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.steam-link[href*="steam"] {
+    background: #2a475e;
+}
+
+.steam-link[href*="steam"]:hover {
+    background: #1b2838;
+}
+
+.steam-link[href*="epicgames"] {
+    background: #2a2a2a;
+}
+
+.steam-link[href*="epicgames"]:hover {
+    background: #000000;
+}
+
+/* URL hint */
+.url-hint {
+    color: #666;
+    font-size: 0.85em;
+    margin-top: 4px;
+    display: block;
+}
+
 /* Estilos generales */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -531,11 +568,10 @@ background: white;
 
 /* Enlaces */
 .steam-link {
-    display: inline-flex;
+ display: inline-flex;
     align-items: center;
- gap: 8px;
+    gap: 8px;
     padding: 8px 16px;
-    background: #2a475e;
     color: white;
     text-decoration: none;
     border-radius: 6px;
@@ -543,58 +579,28 @@ background: white;
     transition: all 0.3s ease;
 }
 
-.steam-link:hover {
+.steam-link[href*="steam"] {
+    background: #2a475e;
+}
+
+.steam-link[href*="steam"]:hover {
     background: #1b2838;
-    transform: translateY(-2px);
 }
 
-/* Estado del juego */
-.status-container {
-    margin-top: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.steam-link[href*="epicgames"] {
+    background: #2a2a2a;
 }
 
-.status-select {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #dcdde1;
-    background: #f5f6fa;
-    cursor: pointer;
+.steam-link[href*="epicgames"]:hover {
+    background: #000000;
 }
 
-/* Matasellos */
-.game-card[data-status="disfrutado"]::before {
-    font-family: "Font Awesome 5 Free";
-    content: "\f00c";  /* fa-check */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-15deg);
-    font-size: 8rem;
-    color: #00b894;
-    opacity: 0.3;
-    z-index: 1;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    pointer-events: none;
-    font-weight: 900;
-}
-
-.game-card[data-status="rechazado"]::before {
- font-family: "Font Awesome 5 Free";
-    content: "\f00d";  /* fa-times */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-15deg);
-    font-size: 8rem;
-    color: #ff4757;
-    opacity: 0.3;
- z-index: 1;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    pointer-events: none;
-    font-weight: 900;
+/* URL hint */
+.url-hint {
+    color: #666;
+    font-size: 0.85em;
+    margin-top: 4px;
+    display: block;
 }
 
 /* Modal */
