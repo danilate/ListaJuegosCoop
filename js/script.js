@@ -1,9 +1,9 @@
 import { onGamesUpdate, updateGameStatus, deleteGame, saveGame } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Script loaded...'); // Debug log
+    console.log('Script loaded...');
     const gameList = document.getElementById('game-list');
-    const modal = document.getElementById('addGameModal');
+  const modal = document.getElementById('addGameModal');
     const openModalBtn = document.getElementById('openAddGame');
     const closeModalBtn = document.querySelector('.close');
     const addGameBtn = document.getElementById('addGameBtn');
@@ -12,18 +12,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función para mostrar el estado de carga
     function setLoading(isLoading) {
-        addGameBtn.disabled = isLoading;
-      addGameBtn.classList.toggle('loading', isLoading);
+    addGameBtn.disabled = isLoading;
+        addGameBtn.classList.toggle('loading', isLoading);
     }
 
     // Función para validar URL
     function isValidGameUrl(url) {
         try {
-            const urlObj = new URL(url);
-       return urlObj.hostname === 'store.steampowered.com' || 
-       urlObj.hostname === 'store.epicgames.com';
-} catch {
-  return false;
+       const urlObj = new URL(url);
+      return urlObj.hostname === 'store.steampowered.com' || 
+urlObj.hostname === 'store.epicgames.com';
+        } catch {
+        return false;
         }
     }
 
@@ -36,85 +36,89 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para obtener información del juego desde Steam
     async function fetchSteamGameInfo(appId) {
         try {
-  const proxyUrl = 'https://api.allorigins.win/get?url=';
-         const steamUrl = `https://store.steampowered.com/api/appdetails?appids=${appId}`;
- const encodedUrl = encodeURIComponent(steamUrl);
-
- const response = await fetch(`${proxyUrl}${encodedUrl}`);
-      const proxyData = await response.json();
-            
-  if (!proxyData.contents) {
-    throw new Error('No se pudo obtener la información del juego');
-         }
-
-  const data = JSON.parse(proxyData.contents);
+    // Usando cors-anywhere como proxy
+        const proxyUrl = 'https://corsproxy.io/?';
+  const steamUrl = `https://store.steampowered.com/api/appdetails?appids=${appId}`;
+      const encodedUrl = encodeURIComponent(steamUrl);
      
-   if (data[appId].success) {
-      const gameInfo = data[appId].data;
-                const coopCategories = gameInfo.categories
-     ?.filter(cat => cat.id === 38 || cat.id === 9 || cat.id === 1)
-        ?.map(cat => cat.description) || [];
+         const response = await fetch(`${proxyUrl}${encodedUrl}`, {
+        headers: {
+       'Accept': 'application/json'
+    }
+          });
 
-             // Solo proceder si el juego tiene modo cooperativo
-      if (coopCategories.length > 0) {
-               return {
-        id: `steam_${appId}`,
-      title: gameInfo.name,
-description: gameInfo.short_description,
-        imageUrl: gameInfo.header_image,
-     storeUrl: `https://store.steampowered.com/app/${appId}`,
-       storeType: 'steam',
-      players: coopCategories.join(', '),
-  status: 'pendiente',
-           icon: 'fas fa-gamepad',
-     addedDate: new Date().toISOString()
-                    };
-       } else {
-         throw new Error('Este juego no parece tener modo cooperativo');
-}
+            if (!response.ok) {
+ throw new Error('Error al obtener datos de Steam');
+       }
+
+   const data = await response.json();
+   
+            if (data[appId].success) {
+     const gameInfo = data[appId].data;
+   const coopCategories = gameInfo.categories
+         ?.filter(cat => cat.id === 38 || cat.id === 9 || cat.id === 1)
+    ?.map(cat => cat.description) || [];
+
+                // Solo proceder si el juego tiene modo cooperativo
+                if (coopCategories.length > 0) {
+         return {
+   id: `steam_${appId}`,
+        title: gameInfo.name,
+         description: gameInfo.short_description,
+          imageUrl: gameInfo.header_image,
+           storeUrl: `https://store.steampowered.com/app/${appId}`,
+   storeType: 'steam',
+                  players: coopCategories.join(', '),
+   status: 'pendiente',
+       icon: 'fas fa-gamepad',
+       addedDate: new Date().toISOString()
+                };
+    } else {
+        throw new Error('Este juego no parece tener modo cooperativo');
          }
-          throw new Error('No se pudo obtener la información del juego');
-        } catch (error) {
-            console.error('Error obteniendo información del juego:', error);
-       throw error;
-        }
+  }
+            throw new Error('No se pudo obtener la información del juego');
+    } catch (error) {
+       console.error('Error obteniendo información del juego:', error);
+            throw new Error('Error al obtener información del juego. Por favor, intenta más tarde.');
+     }
     }
 
     // Event listener para añadir juego
     addGameBtn.addEventListener('click', async () => {
-        const url = gameUrlInput.value.trim();
+   const url = gameUrlInput.value.trim();
         urlError.style.display = 'none';
 
         if (!isValidGameUrl(url)) {
-            urlError.textContent = 'Por favor, introduce una URL válida de Steam o Epic Store';
-         urlError.style.display = 'block';
+     urlError.textContent = 'Por favor, introduce una URL válida de Steam o Epic Store';
+       urlError.style.display = 'block';
             return;
-   }
+        }
 
         setLoading(true);
 
         try {
-   if (url.includes('store.steampowered.com')) {
-                const appId = extractSteamAppId(url);
-       if (appId) {
+            if (url.includes('store.steampowered.com')) {
+    const appId = extractSteamAppId(url);
+        if (appId) {
           const gameInfo = await fetchSteamGameInfo(appId);
-   await saveGame(gameInfo);
-        modal.style.display = 'none';
-        gameUrlInput.value = '';
-    } else {
-       throw new Error('URL de Steam no válida');
+  await saveGame(gameInfo);
+    modal.style.display = 'none';
+       gameUrlInput.value = '';
+      } else {
+         throw new Error('URL de Steam no válida');
 }
-            } else {
-       urlError.textContent = 'La integración con Epic Store está en desarrollo';
-        urlError.style.display = 'block';
-         }
-        } catch (error) {
-   console.error('Error al añadir el juego:', error);
+      } else {
+        urlError.textContent = 'La integración con Epic Store está en desarrollo';
+              urlError.style.display = 'block';
+        }
+} catch (error) {
+  console.error('Error al añadir el juego:', error);
             urlError.textContent = error.message || 'Error al añadir el juego';
-        urlError.style.display = 'block';
+   urlError.style.display = 'block';
         } finally {
-          setLoading(false);
-      }
+            setLoading(false);
+        }
     });
 
     // Función para crear una tarjeta de juego
