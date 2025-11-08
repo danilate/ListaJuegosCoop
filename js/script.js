@@ -219,73 +219,24 @@ const encodedUrl = encodeURIComponent(epicUrl);
      addGameBtn.classList.toggle('loading', isLoading);
     }
 
-    // Función para renderizar todos los juegos
-    function renderGames(games) {
-      if (!games) {
-     console.log('No games data received');
-  return;
-  }
-        
-        gameList.innerHTML = '';
-     
-        // Ordenar juegos primero por orden y luego por estado
-        const sortedGames = Object.entries(games)
-    .map(([id, game]) => ({ ...game, id }))
- .sort((a, b) => {
-    // Primero ordenar por estado
-    const statusOrder = { pendiente: 0, disfrutado: 1, rechazado: 2 };
-     const statusDiff = statusOrder[a.status] - statusOrder[b.status];
-    
-      if (statusDiff !== 0) return statusDiff;
-                
-                // Si tienen el mismo estado, ordenar por el orden personalizado
-                return (a.order || 0) - (b.order || 0);
-   });
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.game-card:not(.dragging)')];
 
-  sortedGames.forEach(game => {
-            gameList.appendChild(createGameCard(game));
-        });
-    }
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+     const offset = y - box.top - box.height / 2;
 
-    // Función para actualizar el orden en Firebase
-    async function updateOrder() {
-        const cards = [...gameList.children];
-        const orderedIds = cards.map(card => card.getAttribute('data-id'));
-  try {
-  await updateGamesOrder(orderedIds);
-        } catch (error) {
- console.error('Error saving order:', error);
-     }
-    }
-
-    // Event listener para el contenedor de juegos
-    gameList.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        const draggingCard = document.querySelector('.dragging');
-        if (!draggingCard) return;
-
-        const cards = [...gameList.children].filter(card => card !== draggingCard);
-        const closestCard = cards.reduce((closest, card) => {
-   const box = card.getBoundingClientRect();
-            const offset = e.clientY - box.top - box.height / 2;
-   
-            if (offset < 0 && offset > closest.offset) {
-             return { offset, element: card };
-      } else {
-                return closest;
-          }
+   if (offset < 0 && offset > closest.offset) {
+ return { offset: offset, element: child };
+            } else {
+  return closest;
+      }
         }, { offset: Number.NEGATIVE_INFINITY }).element;
-
-        if (closestCard) {
-            closestCard.parentNode.insertBefore(draggingCard, closestCard);
-        } else {
-            gameList.appendChild(draggingCard);
-        }
-    });
+    }
 
     // Función para crear una tarjeta de juego
     function createGameCard(game) {
-        const card = document.createElement('div');
+ const card = document.createElement('div');
         card.className = 'game-card';
         card.setAttribute('data-status', game.status);
         card.setAttribute('data-id', game.id);
@@ -315,19 +266,30 @@ const encodedUrl = encodeURIComponent(epicUrl);
       </div>`;
 
         // Event listeners para drag and drop
-        card.addEventListener('dragstart', (e) => {
-    card.classList.add('dragging');
-  e.dataTransfer.setData('text/plain', game.id);
-          e.dataTransfer.effectAllowed = 'move';
-});
+      card.addEventListener('dragstart', (e) => {
+      e.stopPropagation();
+     card.classList.add('dragging');
+            // Añadir efecto visual durante el arrastre
+            requestAnimationFrame(() => {
+   card.style.opacity = '0.5';
+      card.style.transform = 'scale(0.95)';
+        });
+        });
 
-        card.addEventListener('dragend', () => {
-          card.classList.remove('dragging');
-      document.querySelectorAll('.game-card').forEach(card => {
-   card.classList.remove('drag-over');
-     });
-            // Actualizar el orden en Firebase cuando se suelta la tarjeta
-            updateOrder();
+      card.addEventListener('dragend', (e) => {
+e.stopPropagation();
+   card.classList.remove('dragging');
+ // Restaurar estilo visual
+   requestAnimationFrame(() => {
+    card.style.opacity = '';
+     card.style.transform = '';
+            });
+   updateOrder();
+        });
+
+        card.addEventListener('dragover', (e) => {
+         e.preventDefault();
+ e.stopPropagation();
  });
 
         // Event listeners originales
@@ -358,6 +320,60 @@ try {
         });
 
         return card;
+    }
+
+    // Event listener para el contenedor de juegos
+    gameList.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const draggingCard = document.querySelector('.game-card.dragging');
+  if (!draggingCard) return;
+
+        const afterElement = getDragAfterElement(gameList, e.clientY);
+  if (afterElement) {
+    gameList.insertBefore(draggingCard, afterElement);
+        } else {
+          gameList.appendChild(draggingCard);
+        }
+    });
+
+    // Función para renderizar todos los juegos
+    function renderGames(games) {
+        if (!games) {
+            console.log('No games data received');
+    return;
+  }
+        
+        gameList.innerHTML = '';
+        
+     // Ordenar juegos primero por estado y luego por orden personalizado
+        const sortedGames = Object.entries(games)
+        .map(([id, game]) => ({ ...game, id }))
+       .sort((a, b) => {
+        // Primero ordenar por estado
+           const statusOrder = { pendiente: 0, disfrutado: 1, rechazado: 2 };
+                const statusDiff = statusOrder[a.status] - statusOrder[b.status];
+    
+     if (statusDiff !== 0) return statusDiff;
+  
+              // Si tienen el mismo estado, ordenar por el orden personalizado
+ return (a.order || 0) - (b.order || 0);
+        });
+
+        sortedGames.forEach(game => {
+            gameList.appendChild(createGameCard(game));
+        });
+    }
+
+ // Función para actualizar el orden en Firebase
+    async function updateOrder() {
+        const cards = [...gameList.children];
+        const orderedIds = cards.map(card => card.getAttribute('data-id'));
+        
+        try {
+         await updateGamesOrder(orderedIds);
+        } catch (error) {
+     console.error('Error saving order:', error);
+}
     }
 
     // Escuchar cambios en la base de datos
