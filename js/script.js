@@ -1,4 +1,4 @@
-import { onGamesUpdate, updateGameStatus, deleteGame, saveGame } from './firebase.js';
+import { onGamesUpdate, updateGameStatus, deleteGame, saveGame, updateGamesOrder } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const gameList = document.getElementById('game-list');
@@ -219,13 +219,77 @@ const encodedUrl = encodeURIComponent(epicUrl);
      addGameBtn.classList.toggle('loading', isLoading);
     }
 
+    // Función para renderizar todos los juegos
+    function renderGames(games) {
+      if (!games) {
+     console.log('No games data received');
+  return;
+  }
+        
+        gameList.innerHTML = '';
+     
+        // Ordenar juegos primero por orden y luego por estado
+        const sortedGames = Object.entries(games)
+    .map(([id, game]) => ({ ...game, id }))
+ .sort((a, b) => {
+    // Primero ordenar por estado
+    const statusOrder = { pendiente: 0, disfrutado: 1, rechazado: 2 };
+     const statusDiff = statusOrder[a.status] - statusOrder[b.status];
+    
+      if (statusDiff !== 0) return statusDiff;
+                
+                // Si tienen el mismo estado, ordenar por el orden personalizado
+                return (a.order || 0) - (b.order || 0);
+   });
+
+  sortedGames.forEach(game => {
+            gameList.appendChild(createGameCard(game));
+        });
+    }
+
+    // Función para actualizar el orden en Firebase
+    async function updateOrder() {
+        const cards = [...gameList.children];
+        const orderedIds = cards.map(card => card.getAttribute('data-id'));
+  try {
+  await updateGamesOrder(orderedIds);
+        } catch (error) {
+ console.error('Error saving order:', error);
+     }
+    }
+
+    // Event listener para el contenedor de juegos
+    gameList.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const draggingCard = document.querySelector('.dragging');
+        if (!draggingCard) return;
+
+        const cards = [...gameList.children].filter(card => card !== draggingCard);
+        const closestCard = cards.reduce((closest, card) => {
+   const box = card.getBoundingClientRect();
+            const offset = e.clientY - box.top - box.height / 2;
+   
+            if (offset < 0 && offset > closest.offset) {
+             return { offset, element: card };
+      } else {
+                return closest;
+          }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+
+        if (closestCard) {
+            closestCard.parentNode.insertBefore(draggingCard, closestCard);
+        } else {
+            gameList.appendChild(draggingCard);
+        }
+    });
+
     // Función para crear una tarjeta de juego
     function createGameCard(game) {
         const card = document.createElement('div');
-  card.className = 'game-card';
-    card.setAttribute('data-status', game.status);
-      card.setAttribute('data-id', game.id);
-        card.draggable = true; // Hacer la tarjeta arrastrable
+        card.className = 'game-card';
+        card.setAttribute('data-status', game.status);
+        card.setAttribute('data-id', game.id);
+        card.draggable = true;
         
         card.innerHTML = `
             <div class="delete-button" title="Eliminar juego">
@@ -252,49 +316,19 @@ const encodedUrl = encodeURIComponent(epicUrl);
 
         // Event listeners para drag and drop
         card.addEventListener('dragstart', (e) => {
- card.classList.add('dragging');
-            e.dataTransfer.setData('text/plain', game.id);
-  e.dataTransfer.effectAllowed = 'move';
-        });
+    card.classList.add('dragging');
+  e.dataTransfer.setData('text/plain', game.id);
+          e.dataTransfer.effectAllowed = 'move';
+});
 
- card.addEventListener('dragend', () => {
-         card.classList.remove('dragging');
-            document.querySelectorAll('.game-card').forEach(card => {
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+      document.querySelectorAll('.game-card').forEach(card => {
    card.classList.remove('drag-over');
-            });
-        });
-
-        card.addEventListener('dragover', (e) => {
-   e.preventDefault();
-          if (!card.classList.contains('dragging')) {
-card.classList.add('drag-over');
-            }
-    });
-
-        card.addEventListener('dragleave', () => {
-card.classList.remove('drag-over');
-        });
-
-        card.addEventListener('drop', (e) => {
-   e.preventDefault();
-      const draggedId = e.dataTransfer.getData('text/plain');
-            const draggedCard = document.querySelector(`[data-id="${draggedId}"]`);
-          
- if (draggedCard && draggedCard !== card) {
-     const gameList = document.getElementById('game-list');
-       const cards = [...gameList.children];
-    const draggedIndex = cards.indexOf(draggedCard);
-        const dropIndex = cards.indexOf(card);
-
-       if (draggedIndex > dropIndex) {
-     card.parentNode.insertBefore(draggedCard, card);
-       } else {
-                    card.parentNode.insertBefore(draggedCard, card.nextSibling);
-     }
-}
-
-            card.classList.remove('drag-over');
-        });
+     });
+            // Actualizar el orden en Firebase cuando se suelta la tarjeta
+            updateOrder();
+ });
 
         // Event listeners originales
         const deleteBtn = card.querySelector('.delete-button');
@@ -324,25 +358,6 @@ try {
         });
 
         return card;
-    }
-
-    // Función para renderizar todos los juegos
-    function renderGames(games) {
-   if (!games) {
-            console.log('No games data received');
-            return;
-  }
-      
-        gameList.innerHTML = '';
-   Object.entries(games)
-     .sort(([,a], [,b]) => {
-   const statusOrder = { pendiente: 0, disfrutado: 1, rechazado: 2 };
-       return statusOrder[a.status] - statusOrder[b.status];
-            })
- .forEach(([id, game]) => {
-   game.id = id;
-    gameList.appendChild(createGameCard(game));
-        });
     }
 
     // Escuchar cambios en la base de datos

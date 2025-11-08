@@ -20,14 +20,48 @@ const db = getDatabase(app);
 // Función para guardar un juego
 export async function saveGame(gameData) {
     try {
+        // Si no tiene orden, asignar el último
+        if (!gameData.order) {
+       const games = await getAllGames();
+ const maxOrder = Object.values(games || {}).reduce((max, game) => 
+         Math.max(max, game.order || 0), 0);
+            gameData.order = maxOrder + 1;
+        }
+
         const gameRef = ref(db, `games/${gameData.id}`);
-    await set(gameRef, {
-         ...gameData,
-        lastModified: new Date().toISOString()
-     });
-        return gameData.id;
+        await set(gameRef, {
+        ...gameData,
+lastModified: new Date().toISOString()
+        });
+   return gameData.id;
     } catch (error) {
-        console.error('Error saving game:', error);
+console.error('Error saving game:', error);
+        throw error;
+    }
+}
+
+// Función para obtener todos los juegos (Promise)
+export function getAllGames() {
+    return new Promise((resolve, reject) => {
+        const gamesRef = ref(db, 'games');
+        onValue(gamesRef, 
+        (snapshot) => resolve(snapshot.val()),
+  (error) => reject(error),
+         { onlyOnce: true }
+        );
+    });
+}
+
+// Función para actualizar el orden de los juegos
+export async function updateGamesOrder(orderedIds) {
+    try {
+   const updates = {};
+     orderedIds.forEach((id, index) => {
+    updates[`games/${id}/order`] = index;
+        });
+        await update(ref(db), updates);
+    } catch (error) {
+        console.error('Error updating games order:', error);
         throw error;
     }
 }
@@ -37,9 +71,9 @@ export async function deleteGame(gameId) {
     try {
         const gameRef = ref(db, `games/${gameId}`);
         await remove(gameRef);
-     return true;
+        return true;
     } catch (error) {
-        console.error('Error deleting game:', error);
+ console.error('Error deleting game:', error);
         throw error;
     }
 }
@@ -47,10 +81,10 @@ export async function deleteGame(gameId) {
 // Función para actualizar el estado de un juego
 export async function updateGameStatus(gameId, newStatus) {
     try {
-        const gameRef = ref(db, `games/${gameId}`);
-  await update(gameRef, {
-    status: newStatus,
-          lastModified: new Date().toISOString()
+    const gameRef = ref(db, `games/${gameId}`);
+        await update(gameRef, {
+      status: newStatus,
+            lastModified: new Date().toISOString()
         });
     } catch (error) {
         console.error('Error updating game status:', error);
@@ -61,13 +95,10 @@ export async function updateGameStatus(gameId, newStatus) {
 // Función para obtener todos los juegos
 export function onGamesUpdate(callback) {
     const gamesRef = ref(db, 'games');
-    console.log('Setting up Firebase listener...'); // Debug log
     onValue(gamesRef, (snapshot) => {
-        console.log('Firebase data received:', snapshot.val()); // Debug log
-      const data = snapshot.val();
-        callback(data);
+        const data = snapshot.val();
+     callback(data);
     });
 }
 
-// Exportar todo lo necesario
 export { db, ref, set, push, onValue, remove, update };
