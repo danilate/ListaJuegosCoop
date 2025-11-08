@@ -236,144 +236,179 @@ const encodedUrl = encodeURIComponent(epicUrl);
 
     // Función para crear una tarjeta de juego
     function createGameCard(game) {
- const card = document.createElement('div');
+        const card = document.createElement('div');
         card.className = 'game-card';
         card.setAttribute('data-status', game.status);
         card.setAttribute('data-id', game.id);
         card.draggable = true;
-        
+
         card.innerHTML = `
-            <div class="delete-button" title="Eliminar juego">
-     <i class="fas fa-times"></i>
-            </div>
-            <img src="${game.imageUrl}" alt="${game.title}" class="game-image">
-       <div class="card-content">
-         <h2>${game.title}</h2>
-       <p><i class="${game.icon}"></i> ${game.description}</p>
-     <p><i class="fas fa-users"></i> Coop: ${game.players}</p>
-                <a href="${game.storeUrl}" target="_blank" class="steam-link">
-              <i class="${game.storeType === 'steam' ? 'fab fa-steam' : 'fab fa-epic-games'}"></i> 
-      Ver en ${game.storeType === 'steam' ? 'Steam' : game.storeType === 'epic' ? 'Epic Games' : 'Tienda'}
-   </a>
- <div class="status-container">
-           <label for="status-${game.id}"><i class="fas fa-star"></i> Estado:</label>
-  <select id="status-${game.id}" class="status-select">
-          <option value="pendiente" ${game.status === 'pendiente' ? 'selected' : ''}>Pendiente</option>
-  <option value="disfrutado" ${game.status === 'disfrutado' ? 'selected' : ''}>Jugado y disfrutado</option>
-         <option value="rechazado" ${game.status === 'rechazado' ? 'selected' : ''}>Jugado y rechazado</option>
-      </select>
-                </div>
-      </div>`;
+          <div class="delete-button" title="Eliminar juego">
+      <i class="fas fa-times"></i>
+ </div>
+       <img src="${game.imageUrl}" alt="${game.title}" class="game-image">
+         <div class="card-content">
+              <h2>${game.title}</h2>
+          <p><i class="${game.icon}"></i> ${game.description}</p>
+       <p><i class="fas fa-users"></i> Coop: ${game.players}</p>
+   <a href="${game.storeUrl}" target="_blank" class="steam-link">
+   <i class="${game.storeType === 'steam' ? 'fab fa-steam' : 'fab fa-epic-games'}"></i> 
+        Ver en ${game.storeType === 'steam' ? 'Steam' : 'Epic Games'}
+                </a>
+   <div class="status-container">
+       <label for="status-${game.id}">
+          <i class="fas fa-star"></i> Estado:
+           </label>
+    <select id="status-${game.id}" class="status-select">
+           <option value="pendiente" ${game.status === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+    <option value="disfrutado" ${game.status === 'disfrutado' ? 'selected' : ''}>Jugado y disfrutado</option>
+          <option value="rechazado" ${game.status === 'rechazado' ? 'selected' : ''}>Jugado y rechazado</option>
+     </select>
+             </div>
+        </div>`;
 
-        // Event listeners para drag and drop
-      card.addEventListener('dragstart', (e) => {
-      e.stopPropagation();
-     card.classList.add('dragging');
-            // Añadir efecto visual durante el arrastre
-            requestAnimationFrame(() => {
-   card.style.opacity = '0.5';
-      card.style.transform = 'scale(0.95)';
-        });
-        });
+        // Drag events
+  card.addEventListener('dragstart', handleDragStart);
+card.addEventListener('dragend', handleDragEnd);
+        card.addEventListener('dragover', handleDragOver);
+        card.addEventListener('drop', handleDrop);
 
-      card.addEventListener('dragend', (e) => {
-e.stopPropagation();
-   card.classList.remove('dragging');
- // Restaurar estilo visual
-   requestAnimationFrame(() => {
-    card.style.opacity = '';
-     card.style.transform = '';
-            });
-   updateOrder();
-        });
-
-        card.addEventListener('dragover', (e) => {
-         e.preventDefault();
- e.stopPropagation();
- });
-
-        // Event listeners originales
-        const deleteBtn = card.querySelector('.delete-button');
+        // Delete button
+     const deleteBtn = card.querySelector('.delete-button');
         deleteBtn.addEventListener('click', async (event) => {
-       event.stopPropagation();
-    if (confirm(`¿Estás seguro de que quieres eliminar ${game.title}?`)) {
-          try {
+    event.stopPropagation();
+      if (confirm(`¿Estás seguro de que quieres eliminar ${game.title}?`)) {
+      try {
         await deleteGame(game.id);
-              card.remove();
-              } catch (error) {
-       console.error('Error eliminando juego:', error);
-                alert('Error al eliminar el juego');
-    }
-            }
-        });
+       card.remove();
+         } catch (error) {
+          console.error('Error eliminando juego:', error);
+        alert('Error al eliminar el juego');
+   }
+       }
+});
 
+        // Status select
         const select = card.querySelector('.status-select');
-        select.addEventListener('change', async (event) => {
-        event.stopPropagation();
-try {
-      await updateGameStatus(game.id, event.target.value);
-              card.setAttribute('data-status', event.target.value);
-     } catch (error) {
- console.error('Error al actualizar el estado:', error);
-        event.target.value = game.status;
-  }
+      select.addEventListener('change', async (event) => {
+            event.stopPropagation();
+            try {
+    await updateGameStatus(game.id, event.target.value);
+            card.setAttribute('data-status', event.target.value);
+         } catch (error) {
+                console.error('Error al actualizar el estado:', error);
+      event.target.value = game.status;
+      }
         });
 
         return card;
     }
 
-    // Event listener para el contenedor de juegos
+    // Drag and Drop handlers
+    function handleDragStart(e) {
+        e.stopPropagation();
+        this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
+    }
+
+    function handleDragEnd(e) {
+        e.stopPropagation();
+        this.classList.remove('dragging');
+        document.querySelectorAll('.game-card').forEach(card => {
+ card.classList.remove('drag-over');
+        });
+        updateOrder();
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.add('drag-over');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.remove('drag-over');
+
+        const draggedId = e.dataTransfer.getData('text/plain');
+        const draggedElement = document.querySelector(`[data-id="${draggedId}"]`);
+        
+        if (draggedElement && this !== draggedElement) {
+    const allCards = [...gameList.querySelectorAll('.game-card')];
+            const draggedIndex = allCards.indexOf(draggedElement);
+            const dropIndex = allCards.indexOf(this);
+
+       if (draggedIndex > dropIndex) {
+              this.parentNode.insertBefore(draggedElement, this);
+            } else {
+      this.parentNode.insertBefore(draggedElement, this.nextSibling);
+         }
+        }
+    }
+
+    // Container drag events
     gameList.addEventListener('dragover', (e) => {
         e.preventDefault();
-        const draggingCard = document.querySelector('.game-card.dragging');
-  if (!draggingCard) return;
+        const draggable = document.querySelector('.dragging');
+        if (!draggable) return;
 
         const afterElement = getDragAfterElement(gameList, e.clientY);
-  if (afterElement) {
-    gameList.insertBefore(draggingCard, afterElement);
-        } else {
-          gameList.appendChild(draggingCard);
+        if (afterElement) {
+   gameList.insertBefore(draggable, afterElement);
+} else {
+  gameList.appendChild(draggable);
         }
     });
 
-    // Función para renderizar todos los juegos
-    function renderGames(games) {
-        if (!games) {
-            console.log('No games data received');
-    return;
-  }
-        
-        gameList.innerHTML = '';
-        
-     // Ordenar juegos primero por estado y luego por orden personalizado
-        const sortedGames = Object.entries(games)
-        .map(([id, game]) => ({ ...game, id }))
-       .sort((a, b) => {
-        // Primero ordenar por estado
-           const statusOrder = { pendiente: 0, disfrutado: 1, rechazado: 2 };
-                const statusDiff = statusOrder[a.status] - statusOrder[b.status];
-    
-     if (statusDiff !== 0) return statusDiff;
-  
-              // Si tienen el mismo estado, ordenar por el orden personalizado
- return (a.order || 0) - (b.order || 0);
-        });
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.game-card:not(.dragging)')];
 
-        sortedGames.forEach(game => {
-            gameList.appendChild(createGameCard(game));
-        });
+      return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+
+            if (offset < 0 && offset > closest.offset) {
+ return { offset: offset, element: child };
+    } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 
- // Función para actualizar el orden en Firebase
     async function updateOrder() {
         const cards = [...gameList.children];
         const orderedIds = cards.map(card => card.getAttribute('data-id'));
-        
-        try {
-         await updateGamesOrder(orderedIds);
+  try {
+      await updateGamesOrder(orderedIds);
         } catch (error) {
-     console.error('Error saving order:', error);
-}
+            console.error('Error saving order:', error);
+   }
+    }
+
+    function renderGames(games) {
+        if (!games) {
+       console.log('No games data received');
+          return;
+      }
+        
+        gameList.innerHTML = '';
+      
+        // Sort games by status and order
+        const sortedGames = Object.entries(games)
+   .map(([id, game]) => ({ ...game, id }))
+            .sort((a, b) => {
+ const statusOrder = { pendiente: 0, disfrutado: 1, rechazado: 2 };
+    const statusDiff = statusOrder[a.status] - statusOrder[b.status];
+           
+  if (statusDiff !== 0) return statusDiff;
+          return (a.order || 0) - (b.order || 0);
+            });
+
+     sortedGames.forEach(game => {
+            gameList.appendChild(createGameCard(game));
+  });
     }
 
     // Escuchar cambios en la base de datos

@@ -58,14 +58,14 @@ header p {
   border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     overflow: hidden;
-  transition: all 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
     position: relative;
     border: 1px solid rgba(0,0,0,0.05);
     cursor: grab;
-    touch-action: none;
     user-select: none;
+    -webkit-user-drag: element;
 }
 
 .game-card:active {
@@ -73,12 +73,13 @@ header p {
 }
 
 .game-card.dragging {
-    position: absolute;
-    z-index: 9999;
-    pointer-events: none;
-    opacity: 0.8;
+    opacity: 0.7;
     transform: scale(0.95);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.game-card.drag-over {
+    transform: translateY(10px);
 }
 
 .game-card:not(.dragging) {
